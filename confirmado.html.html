@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Presente Confirmado</title>
+  <link rel="stylesheet" href="styleConfirmado.css" />
+  
+</head>
+<body>
+  <div id="conteinerPrincipal">
+    <br><br>
+    <h1>Presente reservado com sucesso!</h1>
+    <p id="mensagem">Carregando...</p>
+    <br>
+    <a id="backHome" href="index.html">Voltar para escolher outro presente</a>
+    <br><br>
+    <a id="references" href="Lista chá de cozinha .pdf" download="">Baixe uma lista de referências para o(s) presente(s).</a>
+    <br><br><br>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const nome = params.get("nome");
+    const item = params.get("item");
+
+    if (nome && item) {
+      document.getElementById("mensagem").textContent =
+        `${decodeURIComponent(nome)}, obrigado por escolher: ${decodeURIComponent(item)} 💝`;
+    } else {
+      document.getElementById("mensagem").textContent =
+        "Informações incompletas. Por favor, volte e preencha corretamente.";
+    }
+  </script>
+</body>
+</html>

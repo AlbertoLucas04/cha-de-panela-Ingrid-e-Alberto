@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lista Chá de Casa Nova</title>
+  <link rel="stylesheet" href="styleHome.css"> 
+  
+</head>
+<body>
+  <div id="conteinerPrincipal">
+    <br>
+    <h1>Chá de Panela - Ingrid e Alberto</h1>
+
+    <p id="littleLetter">
+      Olá, que maravilha que você vai poder estar conosco nesse dia tão memorável. Nós louvamos a Deus pelo que Ele têm feito e por você poder ser parte disso. Abaixo está um pequeno formulário que nos ajudará a organizar a logística desse maravilhoso evento.
+    </p>
+
+    <br><br>
+
+    <label id="nameTitle" for="nameBox">Seu nome:</label>
+    <input type="text" id="nameBox" name="nome" />
+    <br><br><br>
+
+    <h2 id="chooseAGift">Escolha um presente:</h2>
+    <select id="listaItens">
+      <option value="">-- Selecione um item --</option>
+      <option>Escorredor de louças (preto)</option>
+      <option>Jogo de xícaras</option>
+      <option>Jogo de sobremesa (vidro)</option>
+      <option>Jogo de copos (vidro)</option>
+      <option>Boleira de vidro</option>
+      <option>Travessa duralex</option>
+      <option>Pirex de louça retangular (branca)</option>
+      <option>Pirex de louça redondo (branca)</option>
+      <option>Porta temperos de vidro (3 unid)</option>
+      <option>Tábua de carne com silicone</option>
+      <option>Frigideira antiaderente Carrefour Home</option>
+      <option>Fruteira</option>
+      <option>Jogo americano azul (fácil de limpar)</option>
+      <option>Suporte de papel toalha</option>
+      <option>Porta copos de inox</option>
+      <option>Jogo de tapete de cozinha (preto)</option>
+      <option>Jogo de tapete de banheiro (branco)</option>
+      <option>Jogo de lençóis</option>
+      <option>Lençóis de elástico</option>
+      <option>Jogo de cama</option>
+      <option>Caixa organizadora (grande)</option>
+      <option>Cortina blackout off white (2,57x2,46m)</option>
+      <option>Manta para sofá (off white/linho)</option>
+      <option>Jogo de toalha</option>
+      <option>Cesto de roupa (grande)</option>
+      <option>Lixeira de banheiro inox</option>
+      <option>Kit 3 almofadas (linho/off white)</option>
+      <option>Frigideira pequena antiaderente</option>
+      <option>Leiteira</option>
+      <option>Kit descanso de panela</option>
+      <option>Jogo de peneiras (branco)</option>
+      <option>Jogo de panelas Tramontina</option>
+      <option>Pipoqueira (panela)</option>
+      <option>Panela de pressão (grande)</option>
+      <option>Abajur</option>
+      <option>Kit cabide madeira</option>
+      <option>Cobertor casal (bege ou off white)</option>
+      <option>Porta papel toalha</option>
+      <option>Porta-retrato de parede média (100x70cm)</option>
+      <option>Álbum grande</option>
+      <option>Varal de chão (grande)</option>
+      <option>Abajur de chão (preto ou branco)</option>
+      <option>Kit 2 travesseiros</option>
+      <option>Kit acessórios de banheiro (dourado)</option>
+      <option>Torneira para banheiro (dourada)</option>
+      <option>Mixer</option>
+      <option>Cortina voil (branca ou off white, 2,56x2,46)</option>
+      <option>Mesa de apoio lateral de cama</option>
+      <option>Kit peneiras</option>
+      <option>Tapioqueira</option>
+      <option>Forma de silicone</option>
+      <option>Potes de vidro</option>
+      <option>Escova sanitária</option>
+      <option>Bule de chá / café</option>
+      <option>Ferro de passar roupa</option>
+      <option>Jarras de água</option>
+      <option>Queijeira</option>
+      <option>Ralador / triturador</option>
+    </select>
+    <br><br><br><br>
+
+    <button onclick="confirmarPresente()"><b>Confirmar</b></button>
+
+    <script>
+      // Remove da lista os itens já selecionados anteriormente
+      window.addEventListener("DOMContentLoaded", () => {
+        const select = document.getElementById("listaItens");
+        const removidos = JSON.parse(localStorage.getItem("itensRemovidos")) || [];
+
+        for (let i = select.options.length - 1; i >= 0; i--) {
+          if (removidos.includes(select.options[i].text)) {
+            select.remove(i);
+          }
+        }
+      });
+
+      async function confirmarPresente() {
+        const nomeInput = document.getElementById('nameBox');
+        const nome = nomeInput.value.trim();
+        const select = document.getElementById('listaItens');
+        const index = select.selectedIndex;
+
+        if (!nome) {
+          alert("Por favor, digite seu nome.");
+          return;
+        }
+
+        if (index <= 0) {
+          alert("Por favor, selecione um presente.");
+          return;
+        }
+
+        const item = select.options[index].text;
+
+        // Salva item no localStorage para não reaparecer
+        let removidos = JSON.parse(localStorage.getItem("itensRemovidos")) || [];
+        removidos.push(item);
+        localStorage.setItem("itensRemovidos", JSON.stringify(removidos));
+
+        // Envia para o Google Sheets
+        const url = "https://script.google.com/macros/s/AKfycbwQ_tRkjP560U6Cz45ipx2StXND5AWf5qKMKwTvLLGZA4KXz6ZEUOLIdpbBiuL3YAqUjg/exec";
+
+        try {
+          const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `nome=${encodeURIComponent(nome)}&item=${encodeURIComponent(item)}`
+          });
+
+          if (response.ok) {
+            window.location.href = `confirmado.html?item=${encodeURIComponent(item)}&nome=${encodeURIComponent(nome)}`;
+          } else {
+            alert("Erro ao salvar, tente novamente.");
+          }
+        } catch (error) {
+          alert("Erro de conexão com o servidor.");
+          console.error(error);
+        }
+      }
+    </script>
+    <br><br><br>
+  </div>
+</body>
+</html>
